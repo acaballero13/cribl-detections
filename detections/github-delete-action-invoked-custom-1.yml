@@ -1,0 +1,19 @@
+template_version: 0.6
+id: custom-1781468264580-cmhwjo
+title: Github Delete Action Invoked
+description: Detects delete action in the Github audit logs for codespaces, environment, project and repo.
+status: test
+logsource:
+  scope: specific
+  category: file_delete
+  product: github
+  service: audit
+level: medium
+detection:
+  kql_query: |-
+    dataset="main"
+    | where action in ("codespaces.destroy", "environment.delete", "project.delete", "repo.destroy")
+tags:
+  - sigma-import
+  - github
+  - audit
