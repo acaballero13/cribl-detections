@@ -1,0 +1,20 @@
+template_version: 0.6
+id: custom-1781405664562-8tqiyd
+title: AWS Bucket Deleted
+description: |-
+  Detects the deletion of S3 buckets in AWS CloudTrail logs.
+  Monitoring the deletion of S3 buckets is critical for security and data integrity, as it may indicate potential data loss or unauthorized access attempts.
+status: test
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    dataset="cloudtrail"
+    | where eventName == "DeleteBucket"
+    | where errorCode == "Success" or isnull(errorCode)
+tags:
+  - sigma-import
+  - aws
+  - cloudtrail
+  - ai-translated
