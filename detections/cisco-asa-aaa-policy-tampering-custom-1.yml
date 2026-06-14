@@ -1,0 +1,34 @@
+template_version: 0.6
+id: custom-1781473208501-tpvyy2
+title: Cisco ASA - AAA Policy Tampering
+description: |-
+  This analytic detects modifications to authentication and authorization (AAA) security policies on Cisco ASA devices via CLI or ASDM.
+  AAA policies control critical security mechanisms including authentication attempts, lockout thresholds, password policies, and access control settings that protect administrative access to network infrastructure.
+  Adversaries or malicious insiders may weaken authentication policies to facilitate brute force attacks, disable account lockouts to enable unlimited password attempts, reduce password complexity requirements, or modify authorization settings to elevate privileges and maintain persistent access.
+  The detection monitors for command execution events containing AAA-related commands such as `aaa authentication`, `aaa authorization`, or `aaa local authentication`, focusing on changes to authentication attempts, lockout policies, and access control configurations.
+  Investigate any unauthorized modifications to AAA policies, especially changes that weaken security posture (increasing max-fail attempts, disabling lockouts, reducing password requirements), and verify these changes against approved change management processes and security policies.
+status: test
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    dataset="cisco_asa"
+    | where message_id in (111008, 111010)
+    | where command startswith "aaa authentication"
+       or command startswith "aaa authorization"
+       or command startswith "aaa local authentication"
+       or command startswith "aaa-server"
+       or command startswith "no aaa"
+    | summarize count=count() ,
+        firstTime=min(_time),
+        lastTime=max(_time),
+        user=values(user),
+        action=values(action),
+        message_id=values(message_id),
+        command=values(command),
+        src_ip=values(src_ip),
+        process_name=values(process_name)
+      by host
+tags:
+  - ai-translated
