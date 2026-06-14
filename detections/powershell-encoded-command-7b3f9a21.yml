@@ -1,0 +1,35 @@
+template_version: '0.6'
+id: 7b3f9a21-2cd7-4e7e-9a4f-b41e9d8a6c11
+title: PowerShell EncodedCommand Execution
+description: |
+  Detects PowerShell processes launched with -EncodedCommand (and the -enc
+  short form), a common obfuscation technique for payloads delivered via
+  living-off-the-land binaries. Investigate the decoded command alongside
+  the parent process and user context.
+status: stable
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_encoded_command.yml
+author: SigmaHQ
+date: 2023-05-12
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - sigma-import
+logsource:
+  scope: specific
+  category: process_creation
+  product: windows
+falsepositives:
+  - Legitimate administrative scripts using EncodedCommand for non-trivial payloads
+level: high
+detection:
+  kql_query: |
+    dataset="sysmon" | where Image endswith "\\powershell.exe" and (CommandLine contains "-EncodedCommand" or CommandLine contains "-enc ")
+provenance:
+  feed_id: sigmahq-core
+  format: sigma
+  source_ref: rules/windows/process_creation/proc_creation_win_powershell_encoded_command.yml
+  license_id: DRL-1.1
+  upstream_author: SigmaHQ
+  upstream_status: stable
