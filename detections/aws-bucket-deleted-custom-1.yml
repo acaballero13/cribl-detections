@@ -9,10 +9,7 @@ logsource:
   scope: unknown
 level: medium
 detection:
-  kql_query: |-
-    dataset="cloudtrail"
-    | where eventName == "DeleteBucket"
-    | where errorCode == "Success" or isnull(errorCode)
+  kql_query: dataset="cloudtrail" | where eventName == "DeleteBucket" | where errorCode == "Success" or isnull(errorCode)
 tags:
   - sigma-import
   - aws
