@@ -1,0 +1,18 @@
+template_version: 0.6
+id: custom-1781474551374-e8s4z9
+title: Github High Risk Configuration Disabled
+description: Detects when a user disables a critical security feature for an organization.
+status: test
+logsource:
+  scope: specific
+  product: github
+  service: audit
+level: high
+detection:
+  kql_query: |-
+    dataset="main"
+    | where action in ("business_advanced_security.disabled_for_new_repos", "business_advanced_security.disabled_for_new_user_namespace_repos", "business_advanced_security.disabled", "business_advanced_security.user_namespace_repos_disabled", "org.advanced_security_disabled_for_new_repos", "org.advanced_security_disabled_on_all_repos", "org.advanced_security_policy_selected_member_disabled", "org.disable_oauth_app_restrictions", "org.disable_two_factor_requirement", "repo.advanced_security_disabled")
+tags:
+  - sigma-import
+  - github
+  - audit
