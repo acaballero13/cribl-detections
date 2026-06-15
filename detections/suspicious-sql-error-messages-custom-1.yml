@@ -1,0 +1,21 @@
+template_version: 0.6
+id: custom-1781562746955-andql7
+title: Suspicious SQL Error Messages
+description: Detects SQL error messages that indicate probing for an injection attack
+status: test
+logsource:
+  scope: unknown
+level: high
+detection:
+  kql_query: |-
+    dataset="cribl_search_sample"
+    | where _raw has "quoted string not properly terminated"
+       or _raw has "You have an error in your SQL syntax"
+       or _raw has "Unclosed quotation mark"
+       or _raw has "near \"*\": syntax error"
+       or _raw has "SELECTs to the left and right of UNION do not have the same number of result columns"
+tags:
+  - sigma-import
+  - sql
+  - application
+  - ai-translated
