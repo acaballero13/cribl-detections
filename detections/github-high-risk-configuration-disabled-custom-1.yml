@@ -1,5 +1,5 @@
 template_version: 0.6
-id: custom-1781525745017-mq8ojo
+id: custom-1781559952591-hoafm9
 title: Github High Risk Configuration Disabled
 description: Detects when a user disables a critical security feature for an organization.
 status: test
