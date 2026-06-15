@@ -1,0 +1,20 @@
+template_version: 0.6
+id: custom-1781526136337-4lao7x
+title: Possible DCSync Attack
+description: Detects remote RPC calls to MS-DRSR from non DC hosts, which could indicate DCSync / DCShadow attacks.
+status: test
+logsource:
+  scope: specific
+  category: application
+  product: rpc_firewall
+level: high
+detection:
+  kql_query: |-
+    dataset="main"
+    | where EventLog == "RPCFW"
+    | where EventID == "3"
+    | where InterfaceUuid == "e3514235-4b06-11d1-ab04-00c04fc2dcd2"
+tags:
+  - sigma-import
+  - rpc_firewall
+  - application
