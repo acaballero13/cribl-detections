@@ -1,0 +1,18 @@
+template_version: 0.6
+id: custom-1781525916409-a38gdh
+title: Github Fork Private Repositories Setting Enabled/Cleared
+description: Detects when the policy allowing forks of private and internal repositories is changed (enabled or cleared).
+status: test
+logsource:
+  scope: specific
+  product: github
+  service: audit
+level: medium
+detection:
+  kql_query: |-
+    dataset="main"
+    | where action in ("private_repository_forking.clear", "private_repository_forking.enable")
+tags:
+  - sigma-import
+  - github
+  - audit
