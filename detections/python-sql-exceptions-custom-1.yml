@@ -1,0 +1,20 @@
+template_version: 0.6
+id: custom-1781558421278-c60ojj
+title: Python SQL Exceptions
+description: Generic rule for SQL exceptions in Python according to PEP 249
+status: test
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    dataset="cribl_search_sample"
+    | where _raw has "DataError"
+       or _raw has "IntegrityError"
+       or _raw has "ProgrammingError"
+       or _raw has "OperationalError"
+tags:
+  - sigma-import
+  - python
+  - application
+  - ai-translated
