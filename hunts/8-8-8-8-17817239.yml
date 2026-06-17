@@ -1,0 +1,9 @@
+schema_version: 1
+kind: hunt
+id: 1781723946322-bl36a8
+name: 8.8.8.8
+hunt_type: sweep
+query:
+  kql_query: dataset="cribl_internal_logs" (srcaddr="8.8.8.8" or dstaddr="8.8.8.8") | limit 200
+  earliest: '-1h'
+  latest: now
