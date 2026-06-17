@@ -1,0 +1,10 @@
+schema_version: 1
+kind: hunt
+id: 1781723879415-oz8gcj
+name: Test1
+hunt_type: hypothesis
+query:
+  kql_query: dataset="cribl_internal_logs" (srcaddr="8.8.8.8" or dstaddr="8.8.8.8") | limit 200
+  earliest: '-1h'
+  latest: now
+trigger: anomaly
