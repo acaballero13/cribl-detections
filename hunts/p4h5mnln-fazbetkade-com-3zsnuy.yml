@@ -1,0 +1,9 @@
+schema_version: 1
+kind: hunt
+id: 1781725149407-3zsnuy
+name: p4h5mnln.fazbetkade.com
+hunt_type: sweep
+query:
+  kql_query: dataset="cribl_internal_logs" "p4h5mnln.fazbetkade.com" | limit 200
+  earliest: '-1h'
+  latest: now
