@@ -1,0 +1,14 @@
+schema_version: 1
+kind: hunt
+id: 1781722326987-sjec3y
+name: Test attackers
+hunt_type: hypothesis
+query:
+  kql_query: ''
+  earliest: '-1h'
+  latest: now
+trigger: OSSINT
+hypothesis:
+  actor: APT19
+  behavior: Recon
+  location: CN
