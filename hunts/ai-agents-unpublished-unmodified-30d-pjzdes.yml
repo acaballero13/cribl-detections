@@ -1,0 +1,28 @@
+schema_version: 1
+kind: hunt
+id: 1781808104125-pjzdes
+name: AI Agents - Unpublished Unmodified (30d)
+hunt_type: hypothesis
+query:
+  kql_query: dataset="AIAgentsInfo" | where RegistrySource != "A365" | summarize arg_max(Timestamp, *) by AIAgentId | where AgentStatus != "Deleted" | where AgentStatus == "Created" and AgentCreationTime < ago(30d) and LastModifiedTime < ago(30d)
+  earliest: '-7d@d'
+  latest: '-0m@m'
+hypothesis:
+  behavior: |
+    This query identifies AI agents that remain unpublished and have not been modified for at least 30 days. 
+    While these agents may not pose an immediate security threat, they can create operational inefficiencies and increase clutter in the environment. 
+    Unmaintained agents might also contain outdated configurations or sensitive connection details that were never properly retired, which could become a risk if the agent is later published without review.
+    Recommended Action: Review these agents to determine if they should be published, updated, or removed. Regular cleanup helps maintain a secure and organized environment.
+provenance:
+  feed_id: azure-sentinel-hunting
+  format: kql
+  source_ref: Hunting Queries/AI Agents/Copilot Studio Connector/UnpublishedUnmodifiedAIAgents.yaml
+  license_id: MIT
+  rule_id: 7c0f3a6b-9d2e-1f4a-5b7c-8d0e2f5a8b1c
+  content_hash: 83e70ff0
+  original: |
+    AIAgentsInfo
+    | where RegistrySource != "A365"
+    | summarize arg_max(Timestamp, *) by AIAgentId
+    | where AgentStatus != "Deleted"
+    | where AgentStatus == "Created" and AgentCreationTime < ago(30d) and LastModifiedTime < ago(30d)
