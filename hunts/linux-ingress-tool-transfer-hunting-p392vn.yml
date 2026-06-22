@@ -1,0 +1,37 @@
+schema_version: 1
+kind: hunt
+id: 1782150914182-p392vn
+name: Linux Ingress Tool Transfer Hunting
+hunt_type: hypothesis
+query:
+  kql_query: dataset="cribl_internal_logs" (srcaddr="187.86.85.123" or dstaddr="187.86.85.123") | limit 200
+  earliest: '-7d@d'
+  latest: '-0m@m'
+hypothesis:
+  behavior: The following analytic detects the use of 'curl' and 'wget' commands within a Linux environment. It leverages data from Endpoint Detection and Response (EDR) agents, focusing on process names, user information, and command-line executions. This activity is significant as 'curl' and 'wget' are commonly used for downloading files, which can indicate potential ingress of malicious tools. If confirmed malicious, this activity could lead to unauthorized code execution, data exfiltration, or further compromise of the system. Monitoring and tuning this detection helps identify and differentiate between normal and potentially harmful usage.
+provenance:
+  feed_id: splunk-peak-hunting
+  format: spl
+  source_ref: detections/endpoint/linux_ingress_tool_transfer_hunting.yml
+  license_id: Apache-2.0
+  upstream_author: Splunk Threat Research Team
+  rule_id: detections/endpoint/linux_ingress_tool_transfer_hunting.yml
+  content_hash: 6c0fe4f3
+  original: |-
+    | tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime FROM datamodel=Endpoint.Processes
+      WHERE (
+            Processes.process_name=curl
+            OR
+            Processes.process_name=wget
+        )
+      BY Processes.action Processes.dest Processes.original_file_name
+         Processes.parent_process Processes.parent_process_exec Processes.parent_process_guid
+         Processes.parent_process_id Processes.parent_process_name Processes.parent_process_path
+         Processes.process Processes.process_exec Processes.process_guid
+         Processes.process_hash Processes.process_id Processes.process_integrity_level
+         Processes.process_name Processes.process_path Processes.user
+         Processes.user_id Processes.vendor_product
+    | `drop_dm_object_name(Processes)`
+    | `security_content_ctime(firstTime)`
+    | `security_content_ctime(lastTime)`
+    | `linux_ingress_tool_transfer_hunting_filter`
