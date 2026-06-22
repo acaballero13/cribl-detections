@@ -1,0 +1,38 @@
+schema_version: 1
+kind: hunt
+id: 1781810050960-ytsf1q
+name: List *.All MS Graph Permissions Added
+hunt_type: hypothesis
+query:
+  kql_query: dataset="cribl_internal_logs" (srcaddr="152.34.24.21" or dstaddr="152.34.24.21") | limit 200
+  earliest: '-7d@d'
+  latest: '-0m@m'
+hypothesis:
+  behavior: This rule detects the usage of *.All Microsoft Graph permissions that are added. *.All permissions should be scoped if possible, this ensures that the least privilege principle can still be applied. You should monitor for overpermissive applications and rare permissions that are added to applications.
+  evidence: |-
+    References:
+    - https://learn.microsoft.com/en-us/graph/permissions-reference
+    - https://github.com/f-bader/AzSentinelQueries/blob/master/HuntingQueries/GrantHighPrivilegeMicrosoftGraphPermissions.yaml
+attack_techniques:
+  - T1098
+provenance:
+  feed_id: bertjanp-hunting
+  format: kql
+  source_ref: Azure Active Directory/AllGraphPermissionsAdded.md
+  license_id: BSD-3-Clause
+  upstream_author: Bert-Jan Pals
+  rule_id: Azure Active Directory/AllGraphPermissionsAdded.md
+  content_hash: b951c25f
+  original: |-
+    AuditLogs
+    | where Category == "ApplicationManagement"
+    | where ActivityDisplayName in ("Add delegated permission grant", "Add app role assignment to service principal")
+    | mv-expand TargetResources
+    | where TargetResources.displayName == "Microsoft Graph"
+    | mv-expand TargetResources.modifiedProperties
+    | extend InitiatedByUserPrincipalName = InitiatedBy.user.userPrincipalName
+    | extend AddedPermission = replace_string(tostring(TargetResources_modifiedProperties.newValue),'"','')
+    | extend IP = todynamic(InitiatedBy).user.ipAddress
+    | extend ServicePrincipalAppId = replace_string(tostring(todynamic(TargetResources).modifiedProperties[5].newValue),'"','')
+    | where AddedPermission has ".All"
+    | project-reorder TimeGenerated, InitiatedByUserPrincipalName, ActivityDisplayName, AddedPermission, IP, ServicePrincipalAppId
