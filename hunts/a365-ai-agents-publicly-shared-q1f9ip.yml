@@ -1,0 +1,64 @@
+schema_version: 1
+kind: hunt
+id: 1781801019947-q1f9ip
+name: A365 AI Agents - Publicly Shared
+hunt_type: hypothesis
+query:
+  kql_query: |
+    let IdentityIdtoUPN = materialize (
+    IdentityInfo
+    | distinct AccountObjectId, AccountUpn
+    | extend AccountObjectId = tostring(AccountObjectId)
+    | where isnotempty(AccountObjectId) and isnotempty(AccountUpn));
+    AIAgentsInfo
+    | where RegistrySource == "A365"
+    | summarize arg_max(Timestamp, *) by AIAgentId
+    | extend RawAgentInfoJson = parse_json(RawAgentInfo)
+    | extend Scope = tostring(RawAgentInfoJson.scope)
+    | extend DeveloperName = RawAgentInfoJson.developerName
+    | extend OwnerId = tostring(RawAgentInfoJson.owners[0].entityId)
+    | extend CreatorId = tostring(RawAgentInfoJson.creatorId)
+    | join kind=leftouter IdentityIdtoUPN on $left.OwnerId == $right.AccountObjectId
+    | project-rename OwnerUpn = AccountUpn
+    | join kind=leftouter IdentityIdtoUPN on $left.CreatorId == $right.AccountObjectId
+    | project-rename CreatorUpn = AccountUpn
+    | where Scope == "public"
+    | project-away RawAgentInfoJson, OwnerId, CreatorId, AccountObjectId, AccountObjectId1
+    | project-reorder AgentCreationTime, AIAgentId, AIAgentName, OwnerUpn, CreatorUpn, DeveloperName
+  earliest: '-7d@d'
+  latest: '-0m@m'
+hypothesis:
+  behavior: |
+    This query identifies A365 AI agents that are shared publicly.
+    Such configurations significantly increase the risk of unauthorized access by unintended users, which could lead to data exposure or misuse of agent capabilities. 
+    Public sharing is especially sensitive because it extends access beyond organizational boundaries.
+    Recommended Action: Review these agents to confirm whether broad sharing is necessary for the business scenario. 
+    If not, restrict access to specific users or groups and apply least-privilege principles. For public configurations, ensure proper governance and compliance checks are in place.
+provenance:
+  feed_id: azure-sentinel-hunting
+  format: kql
+  source_ref: Hunting Queries/AI Agents/A365 Connector/AIAgentsPubliclyShared.yaml
+  license_id: MIT
+  rule_id: 8c9d0e1f-2a3b-4c5d-6e7f-8a9b0c1d2e3f
+  content_hash: 19c8f089
+  original: |
+    let IdentityIdtoUPN = materialize (
+    IdentityInfo
+    | distinct AccountObjectId, AccountUpn
+    | extend AccountObjectId = tostring(AccountObjectId)
+    | where isnotempty(AccountObjectId) and isnotempty(AccountUpn));
+    AIAgentsInfo
+    | where RegistrySource == "A365"
+    | summarize arg_max(Timestamp, *) by AIAgentId
+    | extend RawAgentInfoJson = parse_json(RawAgentInfo)
+    | extend Scope = tostring(RawAgentInfoJson.scope)
+    | extend DeveloperName = RawAgentInfoJson.developerName
+    | extend OwnerId = tostring(RawAgentInfoJson.owners[0].entityId)
+    | extend CreatorId = tostring(RawAgentInfoJson.creatorId)
+    | join kind=leftouter IdentityIdtoUPN on $left.OwnerId == $right.AccountObjectId
+    | project-rename OwnerUpn = AccountUpn
+    | join kind=leftouter IdentityIdtoUPN on $left.CreatorId == $right.AccountObjectId
+    | project-rename CreatorUpn = AccountUpn
+    | where Scope == "public"
+    | project-away RawAgentInfoJson, OwnerId, CreatorId, AccountObjectId, AccountObjectId1
+    | project-reorder AgentCreationTime, AIAgentId, AIAgentName, OwnerUpn, CreatorUpn, DeveloperName
