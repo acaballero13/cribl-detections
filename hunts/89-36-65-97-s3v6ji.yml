@@ -1,0 +1,9 @@
+schema_version: 1
+kind: hunt
+id: 1782151074011-s3v6ji
+name: 89.36.65.97
+hunt_type: sweep
+query:
+  kql_query: dataset="cribl_internal_logs" (srcaddr="89.36.65.97" or dstaddr="89.36.65.97") | limit 200
+  earliest: '-1h'
+  latest: now
