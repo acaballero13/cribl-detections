@@ -1,0 +1,98 @@
+template_version: 0.6
+id: custom-1782748797796-votcqx
+title: Django Framework Exceptions
+description: Detects suspicious Django web application framework exceptions that could indicate exploitation attempts
+status: stable
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    dataset="cribl_search_sample"
+    | where _raw has "SuspiciousOperation"
+       or _raw has "DisallowedHost"
+       or _raw has "DisallowedModelAdminLookup"
+       or _raw has "DisallowedModelAdminToField"
+       or _raw has "DisallowedRedirect"
+       or _raw has "InvalidSessionKey"
+       or _raw has "RequestDataTooBig"
+       or _raw has "SuspiciousFileOperation"
+       or _raw has "SuspiciousMultipartForm"
+       or _raw has "SuspiciousSession"
+       or _raw has "TooManyFieldsSent"
+       or _raw has "PermissionDenied"
+references:
+  - https://docs.djangoproject.com/en/1.11/ref/exceptions/
+  - https://docs.djangoproject.com/en/1.11/topics/logging/#django-security
+author: Thomas Patzke
+date: Fri Aug 04 2017 20:00:00 GMT-0400 (Eastern Daylight Time)
+tags:
+  - sigma-import
+  - django
+  - application
+  - ai-translated
+falsepositives: Application bugs
+matcher:
+  format: sigma
+  logsource:
+    category: application
+    product: django
+  detection:
+    keywords:
+      - SuspiciousOperation
+      - DisallowedHost
+      - DisallowedModelAdminLookup
+      - DisallowedModelAdminToField
+      - DisallowedRedirect
+      - InvalidSessionKey
+      - RequestDataTooBig
+      - SuspiciousFileOperation
+      - SuspiciousMultipartForm
+      - SuspiciousSession
+      - TooManyFieldsSent
+      - PermissionDenied
+    condition: keywords
+provenance:
+  format: sigma
+  feed_id: sigmahq-core
+  source_ref: rules/application/django/appframework_django_exceptions.yml
+  original: |
+    title: Django Framework Exceptions
+    id: fd435618-981e-4a7c-81f8-f78ce480d616
+    status: stable
+    description: Detects suspicious Django web application framework exceptions that could indicate exploitation attempts
+    references:
+        - https://docs.djangoproject.com/en/1.11/ref/exceptions/
+        - https://docs.djangoproject.com/en/1.11/topics/logging/#django-security
+    author: Thomas Patzke
+    date: 2017-08-05
+    modified: 2020-09-01
+    tags:
+        - attack.initial-access
+        - attack.t1190
+    logsource:
+        category: application
+        product: django
+    detection:
+        keywords:
+            - SuspiciousOperation
+            # Subclasses of SuspiciousOperation
+            - DisallowedHost
+            - DisallowedModelAdminLookup
+            - DisallowedModelAdminToField
+            - DisallowedRedirect
+            - InvalidSessionKey
+            - RequestDataTooBig
+            - SuspiciousFileOperation
+            - SuspiciousMultipartForm
+            - SuspiciousSession
+            - TooManyFieldsSent
+            # Further security-related exceptions
+            - PermissionDenied
+        condition: keywords
+    falsepositives:
+        - Application bugs
+    level: medium
+  license_id: DRL-1.1
+  upstream_author: Thomas Patzke
+  upstream_status: stable
