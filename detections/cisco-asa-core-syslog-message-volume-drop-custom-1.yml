@@ -1,0 +1,53 @@
+template_version: 0.6
+id: custom-1782918806775-9i2zgl
+title: Cisco ASA - Core Syslog Message Volume Drop
+description: Adversaries may intentionally suppress or reduce the volume of core Cisco ASA syslog messages to evade detection or cover their tracks. This hunting search is recommended to proactively identify suspicious downward shifts or absences in key syslog message IDs, which may indicate tampering or malicious activity. Visualizing this data in Splunk dashboards enables security teams to quickly spot anomalies and investigate potential compromise.
+status: test
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    dataset="cisco_asa"
+    | where message_id in (302013, 302014, 609002, 710005)
+    | extend msg_desc =
+    case(message_id == 302013, "Built inbound TCP connection",
+         message_id == 302014, "Teardown TCP connection",
+         message_id == 609002, "Teardown local-host management",
+         message_id == 710005, "TCP request discarded",
+         "")
+    | summarize count=count(), message_description=values(msg_desc), dest=values(dest) by bin(_time, 15m), message_id
+    | evaluate pivot(message_id, sum(count), _time)
+references:
+  - https://blog.talosintelligence.com/arcanedoor-new-espionage-focused-campaign-found-targeting-perimeter-network-devices/
+  - https://sec.cloudapps.cisco.com/security/center/resources/asa_ftd_continued_attacks
+  - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asaftd-webvpn-z5xP8EUB
+  - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-http-code-exec-WmfP3h3O
+  - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asaftd-webvpn-YROOTUW
+  - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-http-code-exec-WmfP3h3O
+  - https://www.cisa.gov/news-events/directives/ed-25-03-identify-and-mitigate-potential-compromise-cisco-devices
+  - https://www.ncsc.gov.uk/news/persistent-malicious-targeting-cisco-devices
+author: Bhavin Patel, Micheal Haag, Splunk
+tags:
+  - ai-translated
+provenance:
+  format: spl
+  feed_id: splunk-escu
+  source_ref: detections/application/cisco_asa___core_syslog_message_volume_drop.yml
+  original: |
+    `cisco_asa`
+    message_id IN (302013, 302014, 609002, 710005)
+    | eval msg_desc=case(
+      message_id="302013","Built inbound TCP connection",
+      message_id="302014","Teardown TCP connection",
+      message_id="609002","Teardown local-host management",
+      message_id="710005","TCP request discarded"
+    )
+    | bin _time span=15m
+    | stats count values(msg_desc) as message_description
+                  values(dest) as dest
+      by _time message_id
+    | xyseries _time message_id count
+    | `cisco_asa___core_syslog_message_volume_drop_filter`
+  license_id: Apache-2.0
+  upstream_author: Bhavin Patel, Micheal Haag, Splunk
