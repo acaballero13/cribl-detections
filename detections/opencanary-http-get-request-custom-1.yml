@@ -1,0 +1,62 @@
+template_version: 0.6
+id: custom-1784061801805-fg1m8m
+title: OpenCanary - HTTP GET Request
+description: Detects instances where an HTTP service on an OpenCanary node has received a GET request.
+status: test
+logsource:
+  scope: unknown
+level: high
+detection:
+  kql_query: |-
+    dataset="opencanary"
+    | where logtype == 3000
+references:
+  - https://opencanary.readthedocs.io/en/latest/starting/configuration.html#services-configuration
+  - https://github.com/thinkst/opencanary/blob/a0896adfcaf0328cfd5829fe10d2878c7445138e/opencanary/logger.py#L52
+author: Security Onion Solutions
+date: '2024-03-08T00:00:00.000Z'
+tags:
+  - sigma-import
+  - opencanary
+  - application
+  - ai-translated
+falsepositives: Unlikely
+matcher:
+  format: sigma
+  logsource:
+    category: application
+    product: opencanary
+  detection:
+    selection:
+      logtype: 3000
+    condition: selection
+provenance:
+  format: sigma
+  feed_id: sigmahq-core
+  source_ref: rules/application/opencanary/opencanary_http_get.yml
+  original: |
+    title: OpenCanary - HTTP GET Request
+    id: af6c3078-84cd-4c68-8842-08b76bd81b13
+    status: test
+    description: Detects instances where an HTTP service on an OpenCanary node has received a GET request.
+    references:
+        - https://opencanary.readthedocs.io/en/latest/starting/configuration.html#services-configuration
+        - https://github.com/thinkst/opencanary/blob/a0896adfcaf0328cfd5829fe10d2878c7445138e/opencanary/logger.py#L52
+    author: Security Onion Solutions
+    date: 2024-03-08
+    tags:
+        - attack.initial-access
+        - attack.t1190
+    logsource:
+        category: application
+        product: opencanary
+    detection:
+        selection:
+            logtype: 3000
+        condition: selection
+    falsepositives:
+        - Unlikely
+    level: high
+  license_id: DRL-1.1
+  upstream_author: Security Onion Solutions
+  upstream_status: test
