@@ -1,0 +1,64 @@
+template_version: 0.6
+id: custom-1786736228939-x0wiq3
+title: New Github Organization Member Added
+description: Detects when a new member is added or invited to a github organization.
+status: test
+logsource:
+  scope: unknown
+level: low
+detection:
+  kql_query: dataset = "github_audit" action in ("org.add_member", "org.invite_member")
+references:
+  - https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/reviewing-the-audit-log-for-your-organization#dependabot_alerts-category-actions
+author: Muhammad Faisal (@faisalusuf)
+date: '2023-01-29T00:00:00.000Z'
+tags:
+  - sigma-import
+  - github
+  - audit
+  - ai-translated
+falsepositives: Organization approved new members
+matcher:
+  format: sigma
+  logsource:
+    product: github
+    service: audit
+    definition: 'Requirements: The audit log streaming feature must be enabled to be able to receive such logs. You can enable following the documentation here: https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise/streaming-the-audit-log-for-your-enterprise#setting-up-audit-log-streaming'
+  detection:
+    selection:
+      action:
+        - org.add_member
+        - org.invite_member
+    condition: selection
+provenance:
+  format: sigma
+  feed_id: sigmahq-core
+  source_ref: rules/application/github/audit/github_new_org_member.yml
+  original: |
+    title: New Github Organization Member Added
+    id: 3908d64a-3c06-4091-b503-b3a94424533b
+    status: test
+    description: Detects when a new member is added or invited to a github organization.
+    author: Muhammad Faisal (@faisalusuf)
+    date: 2023-01-29
+    references:
+        - https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/reviewing-the-audit-log-for-your-organization#dependabot_alerts-category-actions
+    tags:
+        - attack.persistence
+        - attack.t1136.003
+    logsource:
+        product: github
+        service: audit
+        definition: 'Requirements: The audit log streaming feature must be enabled to be able to receive such logs. You can enable following the documentation here: https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise/streaming-the-audit-log-for-your-enterprise#setting-up-audit-log-streaming'
+    detection:
+        selection:
+            action:
+                - 'org.add_member'
+                - 'org.invite_member'
+        condition: selection
+    falsepositives:
+        - Organization approved new members
+    level: informational
+  license_id: DRL-1.1
+  upstream_author: Muhammad Faisal (@faisalusuf)
+  upstream_status: test
