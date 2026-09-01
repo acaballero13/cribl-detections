@@ -1,0 +1,101 @@
+template_version: 0.6
+id: custom-1788284993290-l0d5hg
+title: Suspicious SQL Query
+description: Detects suspicious SQL query keywrods that are often used during recon, exfiltration or destructive activities. Such as dropping tables and selecting wildcard fields
+status: test
+logsource:
+  scope: unknown
+level: medium
+detection:
+  kql_query: |-
+    title: Suspicious SQL Query
+    id: d84c0ded-edd7-4123-80ed-348bb3ccc4d5
+    status: test
+    description: Detects suspicious SQL query keywrods that are often used during recon, exfiltration or destructive activities. Such as dropping tables and selecting wildcard fields
+    author: '@juju4'
+    date: 2022-12-27
+    references:
+        - https://github.com/sqlmapproject/sqlmap
+    tags:
+        - attack.exfiltration
+        - attack.initial-access
+        - attack.privilege-escalation
+        - attack.persistence
+        - attack.t1190
+        - attack.t1505.001
+    logsource:
+        category: database
+        definition: 'Requirements: Must be able to log the SQL queries'
+    detection:
+        keywords:
+            - 'drop'
+            - 'truncate'
+            - 'dump'
+            - 'select \*'
+        condition: keywords
+    falsepositives:
+        - Inventory and monitoring activity
+        - Vulnerability scanners
+        - Legitimate applications
+    level: medium
+references:
+  - https://github.com/sqlmapproject/sqlmap
+author: '@juju4'
+date: '2022-12-27T00:00:00.000Z'
+tags:
+  - sigma-import
+  - database
+falsepositives: |-
+  Inventory and monitoring activity
+  Vulnerability scanners
+  Legitimate applications
+matcher:
+  format: sigma
+  logsource:
+    category: database
+    definition: 'Requirements: Must be able to log the SQL queries'
+  detection:
+    keywords:
+      - drop
+      - truncate
+      - dump
+      - select \*
+    condition: keywords
+provenance:
+  format: sigma
+  feed_id: sigmahq-core
+  source_ref: rules/category/database/db_anomalous_query.yml
+  original: |
+    title: Suspicious SQL Query
+    id: d84c0ded-edd7-4123-80ed-348bb3ccc4d5
+    status: test
+    description: Detects suspicious SQL query keywrods that are often used during recon, exfiltration or destructive activities. Such as dropping tables and selecting wildcard fields
+    author: '@juju4'
+    date: 2022-12-27
+    references:
+        - https://github.com/sqlmapproject/sqlmap
+    tags:
+        - attack.exfiltration
+        - attack.initial-access
+        - attack.privilege-escalation
+        - attack.persistence
+        - attack.t1190
+        - attack.t1505.001
+    logsource:
+        category: database
+        definition: 'Requirements: Must be able to log the SQL queries'
+    detection:
+        keywords:
+            - 'drop'
+            - 'truncate'
+            - 'dump'
+            - 'select \*'
+        condition: keywords
+    falsepositives:
+        - Inventory and monitoring activity
+        - Vulnerability scanners
+        - Legitimate applications
+    level: medium
+  license_id: DRL-1.1
+  upstream_author: '@juju4'
+  upstream_status: test
