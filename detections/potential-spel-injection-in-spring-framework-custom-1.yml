@@ -1,0 +1,64 @@
+template_version: 0.6
+id: custom-1790185964715-68biry
+title: Potential SpEL Injection In Spring Framework
+description: Detects potential SpEL Injection exploitation, which may lead to RCE.
+status: test
+logsource:
+  scope: unknown
+level: high
+detection:
+  kql_query: |-
+    dataset="cribl_internal_logs"
+    | where tostring(_raw) contains "org.springframework.expression.ExpressionException"
+references:
+  - https://owasp.org/www-community/vulnerabilities/Expression_Language_Injection
+  - https://www.wix.engineering/post/threat-and-vulnerability-hunting-with-application-server-error-logs
+author: Moti Harmats
+date: '2023-02-11T00:00:00.000Z'
+tags:
+  - sigma-import
+  - spring
+  - application
+  - ai-translated
+falsepositives: Application bugs
+matcher:
+  format: sigma
+  logsource:
+    category: application
+    product: spring
+    definition: 'Requirements: application error logs must be collected (with LOG_LEVEL=ERROR and above)'
+  detection:
+    keywords:
+      - org.springframework.expression.ExpressionException
+    condition: keywords
+provenance:
+  format: sigma
+  feed_id: sigmahq-core
+  source_ref: rules/application/spring/spring_spel_injection.yml
+  original: |
+    title: Potential SpEL Injection In Spring Framework
+    id: e9edd087-89d8-48c9-b0b4-5b9bb10896b8
+    status: test
+    description: Detects potential SpEL Injection exploitation, which may lead to RCE.
+    references:
+        - https://owasp.org/www-community/vulnerabilities/Expression_Language_Injection
+        - https://www.wix.engineering/post/threat-and-vulnerability-hunting-with-application-server-error-logs
+    author: Moti Harmats
+    date: 2023-02-11
+    tags:
+        - attack.initial-access
+        - attack.t1190
+    logsource:
+        category: application
+        product: spring
+        definition: 'Requirements: application error logs must be collected (with LOG_LEVEL=ERROR and above)'
+    detection:
+        keywords:
+            - 'org.springframework.expression.ExpressionException'
+        condition: keywords
+    falsepositives:
+        - Application bugs
+    level: high
+  license_id: DRL-1.1
+  upstream_author: Moti Harmats
+  upstream_status: test
